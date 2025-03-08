@@ -40,6 +40,7 @@ function Profile() {
       <p>Реферальный код: {user.referral_code}</p>
       <p>Бонусы: {user.bonus_points}</p>
       <button onClick={() => navigate('/order')}>Создать заказ</button>
+      <button onClick={() => navigate('/chat')}>Чат</button>
       <button onClick={logout}>Выйти</button>
     </div>
   );
