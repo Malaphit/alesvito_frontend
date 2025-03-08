@@ -245,6 +245,25 @@ function AdminPanel() {
     navigate('/');
   };
 
+  const handleExportViews = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.get(`${API_URL}/products/export/views`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'product_views.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      alert(error.response?.data?.message || 'Ошибка');
+    }
+  };
+
   return (
     <div>
       <h1>Админ-панель</h1>
@@ -372,6 +391,7 @@ function AdminPanel() {
           </li>
         ))}
       </ul>
+      <button onClick={handleExportViews}>Экспорт статистики просмотров</button>
 
       <h2>Управление заказами</h2>
       <ul>
@@ -390,6 +410,9 @@ function AdminPanel() {
           </li>
         ))}
       </ul>
+        
+
+
 
       <h2>Чат</h2>
       <ul>
