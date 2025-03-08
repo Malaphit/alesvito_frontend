@@ -9,6 +9,7 @@ function AdminPanel() {
   const [products, setProducts] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [categoryForm, setCategoryForm] = useState({ id: '', name: '', description: '', weight: '' });
   const [sizeForm, setSizeForm] = useState({ id: '', size: '' });
   const [productForm, setProductForm] = useState({
@@ -31,16 +32,18 @@ function AdminPanel() {
 
     const fetchData = async () => {
       try {
-        const [catRes, prodRes, sizeRes, chatRes] = await Promise.all([
+        const [catRes, prodRes, sizeRes, chatRes, orderRes] = await Promise.all([
           axios.get(`${API_URL}/categories`, { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(`${API_URL}/products`, { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(`${API_URL}/sizes`, { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(`${API_URL}/chat`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${API_URL}/orders`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         setCategories(catRes.data);
         setProducts(prodRes.data);
         setSizes(sizeRes.data);
         setMessages(chatRes.data);
+        setOrders(orderRes.data);
       } catch (error) {
         localStorage.removeItem('token');
         navigate('/');
@@ -207,6 +210,21 @@ function AdminPanel() {
     }
   };
 
+  const handleOrderStatusUpdate = async (orderId, status) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.put(`${API_URL}/orders/${orderId}/status`, { status }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const [orderRes] = await Promise.all([
+        axios.get(`${API_URL}/orders`, { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+      setOrders(orderRes.data);
+    } catch (error) {
+      alert(error.response?.data?.message || 'Ошибка');
+    }
+  };
+
   const markAsRead = async (messageId) => {
     const token = localStorage.getItem('token');
     try {
@@ -348,9 +366,27 @@ function AdminPanel() {
       <ul>
         {products.map(prod => (
           <li key={prod.id}>
-            {prod.name} - {prod.price} руб. ({prod.category_name}) | Размеры: {prod.sizes.map(s => s.size).join(', ')}
+            {prod.name} - {prod.price} руб. ({prod.category_name}) | Размеры: {prod.sizes.map(s => s.size).join(', ')} | Просмотров: {prod.views_count}
             <button onClick={() => handleProductEdit(prod)}>Редактировать</button>
             <button onClick={() => handleProductDelete(prod.id)}>Удалить</button>
+          </li>
+        ))}
+      </ul>
+
+      <h2>Управление заказами</h2>
+      <ul>
+        {orders.map(order => (
+          <li key={order.id}>
+            Заказ #{order.id} | Пользователь: {order.user_email} | Сумма: {order.total_price} руб. | Статус: {order.status}
+            <select
+              value={order.status}
+              onChange={(e) => handleOrderStatusUpdate(order.id, e.target.value)}
+            >
+              <option value="pending">Ожидает</option>
+              <option value="shipped">Отправлен</option>
+              <option value="delivered">Доставлен</option>
+              <option value="canceled">Отменен</option>
+            </select>
           </li>
         ))}
       </ul>
