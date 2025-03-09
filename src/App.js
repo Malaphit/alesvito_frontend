@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import ProductList from './components/ProductList';
 import ProductDetail from './components/ProductDetail';
 import Cart from './components/Cart';
+import FAQ from './components/FAQ';
 
 function AppContent() {
   return (
@@ -27,6 +28,7 @@ function AppContent() {
           <Route path="/products" element={<ProductList />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/faq" element={<FAQ />} />
         </Routes>
       </div>
       <Footer />

@@ -6,7 +6,7 @@ import './ProductDetail.css';
 const API_URL = 'http://localhost:5000/api';
 
 const ProductDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // Получаем ID товара из URL
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState('');
@@ -16,13 +16,15 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`${API_URL}/products/${id}`, {
+        const response = await axios.get(`${API_URL}/products/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setProduct(res.data);
-        setSelectedImage(res.data.image_urls[0] || '/placeholder.jpg');
+        console.log('Product data:', response.data); // Отладка
+        setProduct(response.data);
+        setSelectedImage(response.data.image_urls[0] || '/placeholder.jpg');
       } catch (error) {
         console.error('Error fetching product:', error);
+        alert(`Товар с ID ${id} не найден. Ошибка: ${error.message}`);
       }
     };
     fetchProduct();
@@ -33,7 +35,13 @@ const ProductDetail = () => {
       alert('Пожалуйста, выберите размер');
       return;
     }
-    const cartItem = { productId: product.id, size: selectedSize, quantity: 1 };
+    const cartItem = {
+      productId: product.id,
+      name: product.name,
+      size: selectedSize,
+      quantity: 1,
+      price: product.price,
+    };
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     cart.push(cartItem);
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -54,7 +62,7 @@ const ProductDetail = () => {
               <img
                 key={index}
                 src={url}
-                alt={`${product.name} ${index}`}
+                alt={`${product.name} ${index + 1}`}
                 className="thumbnail"
                 onClick={() => setSelectedImage(url)}
               />
@@ -63,13 +71,14 @@ const ProductDetail = () => {
         </div>
         <div className="product-info">
           <p>Цена: {product.price} руб.</p>
-          <p>Описание: {product.description}</p>
+          <p>Описание: {product.description || 'Нет описания'}</p>
+          <p>Категория: {product.category_name || 'Не указана'}</p>
           <div className="size-selector">
             <label>Размер:</label>
             <select value={selectedSize} onChange={(e) => setSelectedSize(e.target.value)}>
               <option value="">Выберите размер</option>
               {product.sizes.map((size) => (
-                <option key={size.id} value={size.id}>
+                <option key={size.id} value={size.name}>
                   {size.name}
                 </option>
               ))}
