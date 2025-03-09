@@ -5,6 +5,7 @@ import Profile from './components/Profile';
 import AdminPanel from './components/AdminPanel';
 import OrderForm from './components/OrderForm';
 import Chat from './components/Chat';
+import ResetPassword from './components/ResetPassword';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/order" element={<OrderForm />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </Router>
   );

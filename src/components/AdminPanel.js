@@ -154,15 +154,29 @@ function AdminPanel() {
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
+    const imageUrls = productForm.imageUrls
+      ? productForm.imageUrls
+          .split(',')
+          .map(url => url.trim())
+          .filter(url => url.length > 0) // Удаляем пустые строки
+      : [];
+    const sizeIds = productForm.sizeIds
+      ? productForm.sizeIds
+          .split(',')
+          .map(id => parseInt(id.trim()))
+          .filter(id => !isNaN(id) && id) // Удаляем NaN и 0
+      : [];
     const data = {
-      categoryId: parseInt(productForm.categoryId),
-      name: productForm.name,
-      description: productForm.description,
-      price: parseInt(productForm.price),
-      imageUrls: productForm.imageUrls.split(',').map(url => url.trim()),
-      sizeIds: productForm.sizeIds ? productForm.sizeIds.split(',').map(id => parseInt(id.trim())) : [],
+      categoryId: parseInt(productForm.categoryId) || null, // Избегаем NaN
+      name: productForm.name || '',
+      description: productForm.description || '',
+      price: parseInt(productForm.price) || 0, // Значение по умолчанию
+      imageUrls,
+      sizeIds,
     };
-
+  
+    console.log('Sending data:', data); // Для отладки
+  
     try {
       if (productForm.id) {
         await axios.put(`${API_URL}/products/${productForm.id}`, data, {
@@ -173,12 +187,21 @@ function AdminPanel() {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
-      setProductForm({ id: '', categoryId: '', name: '', description: '', price: '', imageUrls: '', sizeIds: '' });
+      setProductForm({
+        id: '',
+        categoryId: '',
+        name: '',
+        description: '',
+        price: '',
+        imageUrls: '',
+        sizeIds: '',
+      }); // Сбрасываем форму
       const [prodRes] = await Promise.all([
         axios.get(`${API_URL}/products`, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       setProducts(prodRes.data);
     } catch (error) {
+      console.error('Error:', error.response?.data);
       alert(error.response?.data?.message || 'Ошибка');
     }
   };
