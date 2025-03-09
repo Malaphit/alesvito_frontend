@@ -1,0 +1,22 @@
+.product-list {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 товаров в строке */
+    gap: 20px;
+  }
+  
+  .product-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .product-card img {
+    max-width: 100%;
+    height: auto;
+  }

@@ -69,3 +69,18 @@
   .catalog-dropdown div:hover {
     background-color: #444;
   }
+  
+  .category-item {
+    display: block;
+    background: none;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+  
+  .category-item:hover {
+    background-color: #444;
+  }
