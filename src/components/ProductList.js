@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './ProductList.css';
@@ -12,17 +12,6 @@ const ProductList = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const token = localStorage.getItem('token');
 
-  const applyFilters = useCallback((productsToFilter) => {
-    let filtered = [...productsToFilter];
-    if (location.state?.searchResults) {
-      filtered = location.state.searchResults;
-    } else if (location.pathname.startsWith('/category/')) {
-      const categoryId = location.pathname.split('/category/')[1];
-      filtered = filtered.filter((p) => p.category_id === parseInt(categoryId));
-    }
-    setFilteredProducts(filtered);
-  }, [location.state, location.pathname]);
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -30,17 +19,33 @@ const ProductList = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setProducts(res.data);
-        applyFilters(res.data);
+        setFilteredProducts(res.data);
       } catch (error) {
         console.error('Error fetching products:', error);
       }
     };
     fetchProducts();
-  }, [token, applyFilters]);
+  }, [token]);
 
   useEffect(() => {
-    applyFilters(products);
-  }, [location.state, location.pathname, products, applyFilters]);
+    let filtered = [...products];
+    const searchQuery = location.state?.searchQuery || '';
+    const categoryId = location.pathname.startsWith('/category/') 
+      ? parseInt(location.pathname.split('/category/')[1]) 
+      : null;
+
+    if (searchQuery) {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (categoryId) {
+      filtered = filtered.filter((product) => product.category_id === categoryId);
+    }
+
+    setFilteredProducts(filtered);
+  }, [location.state, location.pathname, products]);
 
   return (
     <div className="product-list">

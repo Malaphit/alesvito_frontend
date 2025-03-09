@@ -27,20 +27,9 @@ const Header = () => {
     fetchCategories();
   }, [token]);
 
-  const handleSearch = async (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      try {
-        const res = await axios.get(`${API_URL}/products?search=${searchQuery}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        navigate('/products', { state: { searchResults: res.data } });
-      } catch (error) {
-        console.error('Error searching products:', error);
-      }
-    } else {
-      navigate('/products', { state: { searchResults: null } });
-    }
+    navigate('/products', { state: { searchQuery } });
   };
 
   const handleCatalogClick = (e) => {
