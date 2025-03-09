@@ -6,10 +6,12 @@ import AdminPanel from './components/AdminPanel';
 import OrderForm from './components/OrderForm';
 import Chat from './components/Chat';
 import ResetPassword from './components/ResetPassword';
+import Header from './components/Header';
 
 function App() {
   return (
     <Router>
+      <Header />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
