@@ -1,44 +1,43 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './ResetPassword.css';
 
 const API_URL = 'http://localhost:5000/api';
 
-function ResetPassword() {
-  const [newPassword, setNewPassword] = useState('');
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+const ResetPassword = () => {
+  const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/users/reset-password?token=${token}`, { newPassword }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
-      alert('Пароль успешно сброшен! Войдите с новым паролем.');
+      await axios.post(`${API_URL}/users/reset-password`, { email });
+      alert('Инструкции по восстановлению пароля отправлены на ваш email.');
       navigate('/');
     } catch (error) {
-      alert(error.response?.data?.message || 'Ошибка');
+      alert('Ошибка при отправке запроса. Проверьте email.');
     }
   };
 
   return (
-    <div>
-      <h1>Сброс пароля</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="Новый пароль"
-          required
-        />
-        <br />
-        <button type="submit">Сбросить пароль</button>
+    <div className="reset-container">
+      <form className="reset-form" onSubmit={handleSubmit}>
+        <h2>Восстановление пароля</h2>
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="reset-button">Отправить</button>
+        <a href="/" className="back-link">Вернуться к входу</a>
       </form>
     </div>
   );
-}
+};
 
 export default ResetPassword;

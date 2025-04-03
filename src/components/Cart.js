@@ -9,6 +9,14 @@ const Cart = () => {
     setCart(storedCart);
   }, []);
 
+  const removeFromCart = (index) => {
+    const updatedCart = cart.filter((_, i) => i !== index);
+    setCart(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  };
+
+  const totalPrice = cart.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
+
   return (
     <div className="cart">
       <h2>Корзина</h2>
@@ -18,12 +26,19 @@ const Cart = () => {
         <div>
           {cart.map((item, index) => (
             <div key={index} className="cart-item">
-              <p>Товар ID: {item.productId}</p>
+              <p>Товар: {item.name || `ID: ${item.productId}`}</p>
               <p>Размер: {item.size}</p>
               <p>Количество: {item.quantity}</p>
+              <p>Цена: {(item.price || 0) * item.quantity} руб.</p>
+              <button onClick={() => removeFromCart(index)}>Удалить</button>
             </div>
           ))}
-          <button>Оформить заказ</button>
+          <div className="cart-total">
+            <h3>Итог: {totalPrice} руб.</h3>
+            <button onClick={() => alert('Оформление заказа в разработке')}>
+              Оформить заказ
+            </button>
+          </div>
         </div>
       )}
     </div>

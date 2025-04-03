@@ -12,20 +12,39 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
   const token = localStorage.getItem('token');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/categories`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setCategories(res.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
+        try {
+          const res = await axios.get(`${API_URL}/categories`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setCategories(res.data);
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+        }
+      };
+      const checkAdminRole = async () => {
+        if (token) {
+          try {
+            const response = await axios.get(`${API_URL}/users/me`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const roles = response.data.role ? [response.data.role] : []; 
+            setIsAdmin(roles.includes('admin'));
+            localStorage.setItem('userData', JSON.stringify(response.data)); 
+          } catch (error) {
+            console.error('Error checking role:', error);
+          }
+        }
+      };
+      if (token) {
+        fetchCategories();
+        checkAdminRole();
       }
-    };
-    fetchCategories();
-  }, [token]);
+    }, [token]);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -82,7 +101,7 @@ const Header = () => {
       </div>
       <div className="header-center">
         <img
-          src="/Photo/logoAV.jpg"
+          src="src/Photo/logoAV.jpg"
           alt="Handiwork Vito Rio Logo"
           onClick={() => navigate('/products')}
           className="logo"
@@ -102,12 +121,26 @@ const Header = () => {
             <span role="img" aria-label="search">🔍</span>
           </button>
         </form>
-        <button onClick={() => navigate('/profile')} className="header-button">
-          Профиль
-        </button>
-        <button onClick={() => navigate('/cart')} className="header-button">
-          Корзина
-        </button>
+        {token && (
+          <>
+            <button onClick={() => navigate('/profile')} className="header-button">
+              Профиль
+            </button>
+            <button onClick={() => navigate('/cart')} className="header-button">
+              Корзина
+            </button>
+            {isAdmin && (
+              <button onClick={() => navigate('/admin')} className="header-button">
+                Админ
+              </button>
+            )}
+          </>
+        )}
+        {!token && (
+          <button onClick={() => navigate('/')} className="header-button">
+            Войти
+          </button>
+        )}
       </div>
     </header>
   );

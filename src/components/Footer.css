@@ -5,6 +5,7 @@
     width: 100%;
     flex-shrink: 0;
     height: 80px; /* Фиксированная высота */
+    flex: 0 0 auto;
   }
   
   .footer-content {

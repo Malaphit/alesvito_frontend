@@ -6,7 +6,7 @@ import './ProductDetail.css';
 const API_URL = 'http://localhost:5000/api';
 
 const ProductDetail = () => {
-  const { id } = useParams(); // Получаем ID товара из URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState('');
@@ -16,14 +16,17 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        console.log(`Fetching product with ID: ${id}`);
         const response = await axios.get(`${API_URL}/products/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` || '' },
         });
-        console.log('Product data:', response.data); // Отладка
-        setProduct(response.data);
-        setSelectedImage(response.data.image_urls[0] || '/placeholder.jpg');
+        console.log('Product data:', response.data);
+        const data = response.data;
+        const imageUrls = Array.isArray(data.image_urls) ? data.image_urls : [];
+        setProduct({ ...data, image_urls: imageUrls });
+        setSelectedImage(imageUrls[0] || '/placeholder.jpg');
       } catch (error) {
-        console.error('Error fetching product:', error);
+        console.error('Error fetching product:', error.response ? error.response.data : error.message);
         alert(`Товар с ID ${id} не найден. Ошибка: ${error.message}`);
       }
     };
@@ -35,18 +38,31 @@ const ProductDetail = () => {
       alert('Пожалуйста, выберите размер');
       return;
     }
+
     const cartItem = {
       productId: product.id,
       name: product.name,
       size: selectedSize,
-      quantity: 1,
-      price: product.price,
+      quantity: 1, // По умолчанию 1, можно добавить изменение количества позже
+      price: parseFloat(product.price), // Преобразуем цену в число
     };
+
+    // Получаем текущую корзину из localStorage
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    cart.push(cartItem);
+    // Проверяем, есть ли уже такой товар с таким размером
+    const existingItemIndex = cart.findIndex(
+      (item) => item.productId === cartItem.productId && item.size === cartItem.size
+    );
+    if (existingItemIndex > -1) {
+      cart[existingItemIndex].quantity += 1; // Увеличиваем количество, если товар уже есть
+    } else {
+      cart.push(cartItem); // Добавляем новый товар
+    }
+
+    // Сохраняем обновленную корзину
     localStorage.setItem('cart', JSON.stringify(cart));
     alert('Товар добавлен в корзину!');
-    navigate('/cart');
+    navigate('/cart'); // Перенаправляем в корзину (опционально)
   };
 
   if (!product) return <div>Загрузка...</div>;
@@ -58,7 +74,7 @@ const ProductDetail = () => {
         <div className="product-images">
           <img src={selectedImage} alt={product.name} className="main-image" />
           <div className="thumbnail-gallery">
-            {product.image_urls.map((url, index) => (
+            {Array.isArray(product.image_urls) && product.image_urls.map((url, index) => (
               <img
                 key={index}
                 src={url}
@@ -77,9 +93,9 @@ const ProductDetail = () => {
             <label>Размер:</label>
             <select value={selectedSize} onChange={(e) => setSelectedSize(e.target.value)}>
               <option value="">Выберите размер</option>
-              {product.sizes.map((size) => (
-                <option key={size.id} value={size.name}>
-                  {size.name}
+              {Array.isArray(product.sizes) && product.sizes.map((size) => (
+                <option key={size.id} value={size.size}>
+                  {size.size}
                 </option>
               ))}
             </select>
