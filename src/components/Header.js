@@ -61,7 +61,7 @@ const Header = () => {
   };
 
   const handleCategorySelect = (categoryId) => {
-    navigate(`/category/${categoryId}`);
+    navigate('/products', { state: { categoryId } });
     setIsCatalogOpen(false);
   };
 
