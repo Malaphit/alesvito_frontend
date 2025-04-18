@@ -1,0 +1,111 @@
+.chat-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chat-title {
+    text-align: center;
+    color: #333;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+  
+  .messages-container {
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+  }
+  
+  .messages-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .message-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+  .message-item.user {
+    background-color: #e6f3ff;
+    margin-left: 20%;
+  }
+  
+  .message-item.admin {
+    background-color: #f0f0f0;
+    margin-right: 20%;
+  }
+  
+  .message-sender {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .message-status {
+    font-size: 0.8rem;
+    color: #777;
+  }
+  
+  .no-messages {
+    text-align: center;
+    color: #777;
+    font-size: 1rem;
+  }
+  
+  .input-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .message-input {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: none;
+    height: 60px;
+  }
+  
+  .send-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #4a90e2;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .send-button:hover {
+    background-color: #357abd;
+  }
+  
+  .back-button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #e94e77;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .back-button:hover {
+    background-color: #d43f66;
+  }

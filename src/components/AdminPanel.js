@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import AdminChat from './AdminChat'; // Импортируем новый компонент
 import './AdminPanel.css';
 
 const API_URL = 'http://localhost:5000/api';
@@ -9,8 +10,7 @@ function AdminPanel() {
   const [activeTab, setActiveTab] = useState('categories');
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [sizes, setSizes] = useState([]); // Используем состояние для размеров
-  const [messages, setMessages] = useState([]);
+  const [sizes, setSizes] = useState([]);
   const [orders, setOrders] = useState([]);
   const [categoryForm, setCategoryForm] = useState({ id: '', name: '', description: '', weight: '' });
   const [sizeForm, setSizeForm] = useState({ id: '', size: '' });
@@ -34,17 +34,15 @@ function AdminPanel() {
 
     const fetchData = async () => {
       try {
-        const [catRes, prodRes, sizeRes, chatRes, orderRes] = await Promise.all([
+        const [catRes, prodRes, sizeRes, orderRes] = await Promise.all([
           axios.get(`${API_URL}/categories`, { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(`${API_URL}/products`, { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(`${API_URL}/sizes`, { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get(`${API_URL}/chat`, { headers: { Authorization: `Bearer ${token}` } }),
           axios.get(`${API_URL}/orders`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         setCategories(catRes.data);
         setProducts(prodRes.data);
-        setSizes(sizeRes.data); // Загружаем размеры
-        setMessages(chatRes.data);
+        setSizes(sizeRes.data);
         setOrders(orderRes.data);
       } catch (error) {
         localStorage.removeItem('token');
@@ -242,26 +240,6 @@ function AdminPanel() {
     }
   };
 
-  const markAsRead = async (messageId) => {
-    const token = localStorage.getItem('token');
-    try {
-      await axios.put(`${API_URL}/chat/${messageId}/read`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const [chatRes] = await Promise.all([
-        axios.get(`${API_URL}/chat`, { headers: { Authorization: `Bearer ${token}` } }),
-      ]);
-      setMessages(chatRes.data);
-    } catch (error) {
-      alert(error.response?.data?.message || 'Ошибка');
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
-  };
-
   const handleExportViews = async () => {
     const token = localStorage.getItem('token');
     try {
@@ -281,6 +259,11 @@ function AdminPanel() {
     }
   };
 
+  const logout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   return (
     <div className="admin-panel">
       <h1>Админ-панель</h1>
@@ -298,7 +281,7 @@ function AdminPanel() {
           Товары
         </button>
         <button
-          className={`tab-button ${activeTab === 'sizes' ? 'active' : ''}`} // Новая вкладка для размеров
+          className={`tab-button ${activeTab === 'sizes' ? 'active' : ''}`}
           onClick={() => setActiveTab('sizes')}
         >
           Размеры
@@ -412,7 +395,11 @@ function AdminPanel() {
             <ul>
               {products.map((prod) => (
                 <li key={prod.id}>
-                  {prod.name} - {prod.price} руб. ({prod.category_name}) | Размеры: {prod.sizes.map((s) => s.size).join(', ')} | Просмотров: {prod.views_count}
+                  {prod.name} - {prod.price} руб. ({prod.category_name}) | Размеры:{' '}
+                  {prod.sizes && Array.isArray(prod.sizes)
+                    ? prod.sizes.map((s) => s.size).join(', ')
+                    : 'Нет размеров'}{' '}
+                  | Просмотров: {prod.views_count || 0}
                   <button onClick={() => handleProductEdit(prod)}>Редактировать</button>
                   <button onClick={() => handleProductDelete(prod.id)}>Удалить</button>
                 </li>
@@ -453,8 +440,12 @@ function AdminPanel() {
             <ul>
               {orders.map((order) => (
                 <li key={order.id}>
-                  Заказ #{order.id} | Пользователь: {order.user_email} | Сумма: {order.total_price} руб. | Статус: {order.status}
-                  <select value={order.status} onChange={(e) => handleOrderStatusUpdate(order.id, e.target.value)}>
+                  Заказ #{order.id} | Пользователь: {order.user_email} | Сумма: {order.total_price}{' '}
+                  руб. | Статус: {order.status}
+                  <select
+                    value={order.status}
+                    onChange={(e) => handleOrderStatusUpdate(order.id, e.target.value)}
+                  >
                     <option value="pending">Ожидает</option>
                     <option value="shipped">Отправлен</option>
                     <option value="delivered">Доставлен</option>
@@ -466,19 +457,7 @@ function AdminPanel() {
           </div>
         )}
 
-        {activeTab === 'chat' && (
-          <div className="tab-section">
-            <h2>Чат</h2>
-            <ul>
-              {messages.map((msg) => (
-                <li key={msg.id}>
-                  {msg.user_email}: {msg.message} (Прочитано: {msg.is_read ? 'Да' : 'Нет'})
-                  {!msg.is_read && <button onClick={() => markAsRead(msg.id)}>Отметить как прочитанное</button>}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {activeTab === 'chat' && <AdminChat />}
 
         {activeTab === 'export' && (
           <div className="tab-section">
