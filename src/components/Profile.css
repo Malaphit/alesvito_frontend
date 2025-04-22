@@ -1,232 +1,78 @@
 .profile-container {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 20px;
-    font-family: 'Roboto', sans-serif;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .profile-title {
-    text-align: center;
-    color: #333;
-    font-size: 2rem;
-    margin-bottom: 30px;
-    font-weight: 500;
-  }
-  
-  .profile-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-  }
-  
-  .tab-button {
-    padding: 12px 25px;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #555;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .tab-button:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .tab-button.active {
-    background-color: #4a90e2;
-    color: #fff;
-    border-color: #4a90e2;
-  }
-  
-  /* Вкладка "Информация" */
-  .info-section {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  }
-  
-  .info-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    font-size: 1rem;
-    color: #444;
-  }
-  
-  .info-label {
-    font-weight: 600;
-    color: #333;
-    width: 150px;
-  }
-  
-  .action-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
-    justify-content: center;
-  }
-  
-  .action-button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #fff;
-    background-color: #4a90e2;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .action-button:hover {
-    background-color: #357abd;
-  }
-  
-  .logout-button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #fff;
-    background-color: #e94e77;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .logout-button:hover {
-    background-color: #d43f66;
-  }
-  
-  /* Вкладка "Мои заказы" */
-  .orders-section {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  }
-  
-  .section-title {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 20px;
-    font-weight: 500;
-  }
-  
-  .orders-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .order-item {
-    border-bottom: 1px solid #eee;
-    padding: 15px 0;
-    transition: background-color 0.3s ease;
-  }
-  
-  .order-item:hover {
-    background-color: #f8f9fa;
-  }
-  
-  .order-summary {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-  
-  .order-info {
-    font-size: 0.95rem;
-    color: #555;
-  }
-  
-  .details-button {
-    padding: 8px 15px;
-    font-size: 0.9rem;
-    color: #fff;
-    background-color: #28a745;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .details-button:hover {
-    background-color: #218838;
-  }
-  
-  .order-details {
-    margin-top: 15px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #4a90e2;
-  }
-  
-  .order-details h3 {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  .order-details p {
-    font-size: 0.95rem;
-    color: #444;
-    margin: 5px 0;
-  }
-  
-  .order-details h4 {
-    font-size: 1rem;
-    color: #333;
-    margin: 10px 0 5px;
-  }
-  
-  .order-items-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .order-items-list li {
-    font-size: 0.9rem;
-    color: #555;
-    margin: 5px 0;
-  }
-  
-  .close-details-button {
-    margin-top: 15px;
-    padding: 8px 15px;
-    font-size: 0.9rem;
-    color: #fff;
-    background-color: #6c757d;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .close-details-button:hover {
-    background-color: #5a6268;
-  }
-  
-  .no-orders {
-    text-align: center;
-    font-size: 1rem;
-    color: #777;
-    margin-top: 20px;
-  }
-  
-  .loading,
-  .error {
-    text-align: center;
-    font-size: 1rem;
-    color: #777;
-    margin: 20px 0;
-  }
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 200px;
+  border-right: 1px solid #ccc;
+  padding: 10px;
+}
+
+.sidebar h2 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar button {
+  background: none;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar button:hover {
+  background-color: #e0e0e0;
+}
+
+.sidebar button.active {
+  background-color: #ccc;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+.content form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+}
+
+.content form div {
+  display: flex;
+  flex-direction: column;
+}
+
+.content form label {
+  margin-bottom: 5px;
+}
+
+.content form input,
+.content form textarea {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.content form button {
+  padding: 10px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.content form button:hover {
+  background-color: #357abd;
+}

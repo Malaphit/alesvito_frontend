@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import './AdminChat.css';
+import './AdminChat.scss';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -13,7 +13,6 @@ function AdminChat() {
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
 
-  // Загрузка списка пользователей с сообщениями
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -38,7 +37,6 @@ function AdminChat() {
     fetchUsers();
   }, []);
 
-  // Загрузка сообщений для выбранного пользователя
   useEffect(() => {
     if (!selectedUserId) return;
 
@@ -60,12 +58,10 @@ function AdminChat() {
     fetchMessages();
   }, [selectedUserId]);
 
-  // Авто-прокрутка к последнему сообщению
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Отправка сообщения
   const sendMessage = async () => {
     if (!newMessage.trim()) {
       setError('Сообщение не может быть пустым');
@@ -77,14 +73,14 @@ function AdminChat() {
       setLoading(true);
       await axios.post(
         `${API_URL}/chat`,
-        { message: newMessage },
+        { message: newMessage, targetUserId: selectedUserId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setNewMessage('');
-      const response = await axios.get(`${API_URL}/chat?userId=${selectedUserId}`, {
+      const messagesResponse = await axios.get(`${API_URL}/chat?userId=${selectedUserId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setMessages(response.data);
+      setMessages(messagesResponse.data);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Ошибка отправки сообщения');
@@ -93,7 +89,6 @@ function AdminChat() {
     }
   };
 
-  // Пометка сообщения как прочитанного
   const markAsRead = async (messageId) => {
     const token = localStorage.getItem('token');
     try {
@@ -128,7 +123,9 @@ function AdminChat() {
                   className={`user-item ${selectedUserId === user.id ? 'selected' : ''}`}
                   onClick={() => setSelectedUserId(user.id)}
                 >
-                  {user.email}
+                  {user.first_name && user.last_name
+                    ? `${user.first_name} ${user.last_name}`
+                    : user.email}
                 </li>
               ))}
             </ul>
@@ -145,16 +142,23 @@ function AdminChat() {
                     {messages.map((msg) => (
                       <li
                         key={msg.id}
-                        className={`message-item ${msg.user_id === selectedUserId ? 'user' : 'admin'}`}
+                        className={`message-item ${msg.sender_role === 'admin' ? 'admin' : 'user'}`}
                       >
                         <span className="message-sender">
-                          {msg.user_id === selectedUserId ? msg.user_email : 'Вы'}:
+                          {msg.sender_role === 'admin'
+                            ? `${msg.admin_first_name || ''} ${msg.admin_last_name || ''}`.trim() ||
+                              msg.admin_email
+                            : `${msg.user_first_name || ''} ${msg.user_last_name || ''}`.trim() ||
+                              msg.user_email}
+                          :
                         </span>{' '}
                         {msg.message}{' '}
-                        <span className="message-status">
-                          ({msg.is_read ? 'Прочитано' : 'Не прочитано'})
-                        </span>
-                        {!msg.is_read && msg.user_id === selectedUserId && (
+                        {msg.sender_role === 'user' && (
+                          <span className="message-status">
+                            ({msg.is_read ? 'Прочитано' : 'Не прочитано'})
+                          </span>
+                        )}
+                        {msg.sender_role === 'user' && !msg.is_read && (
                           <button onClick={() => markAsRead(msg.id)}>Отметить как прочитанное</button>
                         )}
                       </li>
